@@ -208,6 +208,55 @@ export class GhostEngine {
     }
   }
 
+  /**
+   * Snapshot of what's on screen: the camera frame at full video resolution with the
+   * ghosts drawn over it, cropped to the visible area. Resolves to a JPEG Blob.
+   * @param {{width:number, height:number}} view  size (CSS px) of the box the stage is cropped to
+   */
+  capturePhoto(view) {
+    const vw = this.video.videoWidth;
+    const vh = this.video.videoHeight;
+    const sw = this.canvas.clientWidth;
+    const sh = this.canvas.clientHeight;
+    if (!this.running || !vw || !vh || !sw || !sh) return Promise.reject(new Error('The camera is not ready yet'));
+
+    // Visible rectangle in stage (CSS) pixels, centred like the on-screen cover layout.
+    const bw = Math.min(view?.width || sw, sw);
+    const bh = Math.min(view?.height || sh, sh);
+    const cx = (sw - bw) / 2;
+    const cy = (sh - bh) / 2;
+
+    const k = vw / sw; // video pixels per CSS pixel
+    const out = Math.min(1, 2048 / Math.max(bw * k, bh * k)); // keep photos under ~2048 px
+    const outW = Math.round(bw * k * out);
+    const outH = Math.round(bh * k * out);
+
+    const photo = document.createElement('canvas');
+    photo.width = outW;
+    photo.height = outH;
+    const ctx = photo.getContext('2d');
+    ctx.drawImage(this.video, cx * k, cy * k, bw * k, bh * k, 0, 0, outW, outH);
+
+    // Render right now so the WebGL canvas still holds this frame when we copy it.
+    this.renderer.render(this.scene, this.camera);
+    const g = this.canvas.width / sw; // GL pixels per CSS pixel
+    ctx.drawImage(this.canvas, cx * g, cy * g, bw * g, bh * g, 0, 0, outW, outH);
+
+    // Small signature in the corner.
+    const fontPx = Math.max(14, Math.round(outH * 0.022));
+    ctx.font = `600 ${fontPx}px system-ui, sans-serif`;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.shadowColor = 'rgba(0,0,0,0.7)';
+    ctx.shadowBlur = fontPx * 0.4;
+    ctx.fillText('Ghost Scanner', outW - fontPx, outH - fontPx);
+
+    return new Promise((resolve, reject) =>
+      photo.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not save the photo'))), 'image/jpeg', 0.92),
+    );
+  }
+
   stop() {
     this.running = false;
     cancelAnimationFrame(this.raf);

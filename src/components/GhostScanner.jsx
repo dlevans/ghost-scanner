@@ -32,6 +32,11 @@ export default function GhostScanner() {
   const [visible, setVisible] = useState([]); // ghost ids currently in view
   const [toast, setToast] = useState(null);
   const [stats, setStats] = useState({ fps: 0, markers: [] });
+  const [photo, setPhoto] = useState(null); // { url } of the last photo taken
+  const [photoMsg, setPhotoMsg] = useState('');
+  const [flash, setFlash] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const msgTimer = useRef(null);
 
   const stopScanning = useCallback(() => {
     clearTimeout(toastTimer.current);
@@ -40,8 +45,14 @@ export default function GhostScanner() {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
+    clearTimeout(msgTimer.current);
     setVisible([]);
     setToast(null);
+    setPhotoMsg('');
+    setPhoto((prev) => {
+      if (prev) URL.revokeObjectURL(prev.url);
+      return null;
+    });
     setStatus('idle');
   }, []);
 
@@ -113,6 +124,61 @@ export default function GhostScanner() {
     }
   };
 
+  const showMsg = (text) => {
+    setPhotoMsg(text);
+    clearTimeout(msgTimer.current);
+    msgTimer.current = setTimeout(() => setPhotoMsg(''), 3000);
+  };
+
+  // Take a photo (camera + ghosts) and save it: share sheet on phones ("Save Image"),
+  // a normal download everywhere else.
+  const takePhoto = async () => {
+    if (saving || !engineRef.current) return;
+    setSaving(true);
+    try {
+      const box = containerRef.current;
+      const blob = await engineRef.current.capturePhoto({ width: box.clientWidth, height: box.clientHeight });
+      setFlash(true);
+      setTimeout(() => setFlash(false), 250);
+
+      const url = URL.createObjectURL(blob);
+      setPhoto((prev) => {
+        if (prev) URL.revokeObjectURL(prev.url);
+        return { url };
+      });
+
+      const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
+      const file = new File([blob], `ghost-scan-${stamp}.jpg`, { type: 'image/jpeg' });
+      const isTouch = window.matchMedia?.('(pointer: coarse)').matches;
+
+      if (isTouch && navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'Ghost Scanner' });
+          showMsg('Photo ready to save');
+          return;
+        } catch (err) {
+          if (err?.name === 'AbortError') {
+            showMsg('Tap the photo to save it');
+            return;
+          }
+          // anything else: fall through to a plain download
+        }
+      }
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showMsg('Photo saved');
+    } catch (err) {
+      console.error(err);
+      showMsg(err?.message || 'Could not take the photo');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const scanning = status === 'scanning';
 
   return (
@@ -148,7 +214,24 @@ export default function GhostScanner() {
             </div>
           )}
 
+          {flash && <div className="flash" aria-hidden="true" />}
+          {photoMsg && (
+            <div className="photo-msg" role="status">
+              {photoMsg}
+            </div>
+          )}
+
           <footer className="hud-bottom">
+            <div className="shutter-row">
+              <button className="shutter" onClick={takePhoto} disabled={saving} aria-label="Take a photo">
+                <span />
+              </button>
+              {photo && (
+                <a className="photo-thumb" href={photo.url} target="_blank" rel="noreferrer" title="Open last photo">
+                  <img src={photo.url} alt="Last photo" />
+                </a>
+              )}
+            </div>
             <ul className="catalog">
               {GHOSTS.map((g) => {
                 const isFound = found.includes(g.id);

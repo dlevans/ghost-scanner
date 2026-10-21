@@ -734,3 +734,92 @@ body:has(.builder) {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ---------- photo button ---------- */
+
+.shutter-row {
+  position: relative;
+  height: 4px;
+}
+
+.shutter {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 68px;
+  height: 68px;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: rgba(11, 7, 22, 0.55);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.shutter span {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.1s;
+}
+
+.shutter:active span {
+  transform: scale(0.88);
+}
+
+.shutter:disabled {
+  opacity: 0.6;
+}
+
+.photo-thumb {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  pointer-events: none;
+  animation: flash 0.25s ease-out forwards;
+}
+
+@keyframes flash {
+  from {
+    opacity: 0.85;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.photo-msg {
+  position: absolute;
+  left: 50%;
+  top: calc(64px + env(safe-area-inset-top));
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
