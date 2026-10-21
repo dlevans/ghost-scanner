@@ -192,6 +192,9 @@ export default function GhostScanner() {
             {status === 'starting' ? 'Opening camera…' : 'Scan for ghosts'}
           </button>
           {status === 'error' && <p className="error">{error}</p>}
+          <a className="link-btn" href="#/builder">
+            Build your own ghost
+          </a>
           <section className="markers-box" aria-label="Test markers">
             <h2>Test markers</h2>
             <p>

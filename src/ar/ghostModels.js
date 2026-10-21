@@ -31,23 +31,35 @@ function materialFor(name, ghost, body) {
   if (n.startsWith('eye') || n.startsWith('mouth')) return new THREE.MeshBasicMaterial({ color: '#130d24' });
   if (n.startsWith('cheek')) return solid('#ff8fb0', { emissive: '#ff4f86', emissiveIntensity: 0.25 });
   if (n.startsWith('hatband')) return solid('#8a35e8', { emissive: '#6a1fc0', emissiveIntensity: 0.3 });
+  if (n.startsWith('party')) return solid('#ff4fa3', { emissive: '#d81b7a', emissiveIntensity: 0.3 });
+  if (n.startsWith('crown')) return solid('#ffd24a', { emissive: '#ffb300', emissiveIntensity: 0.35 });
+  if (n.startsWith('horn')) return solid('#efe6d2');
+  if (n.startsWith('bow')) return solid('#e0354f', { emissive: '#a01030', emissiveIntensity: 0.25 });
   if (n.startsWith('hat')) return solid('#1c1a2e');
   if (n.startsWith('pumpkin')) return solid('#ff7a1a', { emissive: '#ff5a00', emissiveIntensity: 0.45 });
   if (n.startsWith('stem')) return solid('#3f8f3a');
   return body; // body, arms, anything else
 }
 
+/** Give every named part of a loaded OBJ its material. `ghost` needs `color` and `glow`. */
+export function styleGhostObject(obj, ghost) {
+  const body = bodyMaterial(ghost);
+  obj.traverse((child) => {
+    if (!child.isMesh) return;
+    child.geometry.computeVertexNormals();
+    child.material = materialFor(child.name, ghost, body);
+  });
+  return obj;
+}
+
+/** Parse OBJ text (used by the ghost builder preview) and style it like the scanner does. */
+export function parseGhostObj(text, ghost) {
+  return styleGhostObject(loader.parse(text), ghost);
+}
+
 function loadTemplate(ghost) {
   const url = `${import.meta.env.BASE_URL}ghosts/${ghost.file}`;
-  return loader.loadAsync(url).then((obj) => {
-    const body = bodyMaterial(ghost);
-    obj.traverse((child) => {
-      if (!child.isMesh) return;
-      child.geometry.computeVertexNormals();
-      child.material = materialFor(child.name, ghost, body);
-    });
-    return obj;
-  });
+  return loader.loadAsync(url).then((obj) => styleGhostObject(obj, ghost));
 }
 
 // Soft additive glow that sits on the wall behind the ghost.

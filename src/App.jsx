@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import GhostScanner from './components/GhostScanner.jsx';
 import MarkerSheet from './components/MarkerSheet.jsx';
+import GhostBuilder from './components/GhostBuilder.jsx';
 
-// Tiny hash router: "#/markers" is the printable marker sheet, anything else is the scanner.
+// Tiny hash router: "#/markers" is the printable marker sheet, "#/builder" the ghost builder,
+// anything else is the scanner.
 function useRoute() {
   const [route, setRoute] = useState(window.location.hash);
   useEffect(() => {
@@ -15,5 +17,7 @@ function useRoute() {
 
 export default function App() {
   const route = useRoute();
-  return route.startsWith('#/markers') ? <MarkerSheet /> : <GhostScanner />;
+  if (route.startsWith('#/markers')) return <MarkerSheet />;
+  if (route.startsWith('#/builder')) return <GhostBuilder />;
+  return <GhostScanner />;
 }
