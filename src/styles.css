@@ -1,0 +1,371 @@
+:root {
+  --bg: #0b0716;
+  --panel: rgba(18, 12, 36, 0.78);
+  --text: #f1ecff;
+  --muted: #a79fc4;
+  --accent: #8f7bff;
+  --glow: #6fe3ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- scanner layout ---------- */
+
+.scanner {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 20%, #241447 0%, var(--bg) 65%);
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.stage-video,
+.stage-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.stage-video {
+  object-fit: fill;
+  background: #000;
+}
+
+.stage-canvas {
+  pointer-events: none;
+}
+
+/* ---------- intro / landing ---------- */
+
+.intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 25%, #2b1a55 0%, var(--bg) 70%);
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  letter-spacing: 0.04em;
+}
+
+.lede {
+  max-width: 28rem;
+  margin: 0 0 8px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.intro-ghost {
+  filter: drop-shadow(0 0 22px rgba(111, 227, 255, 0.55));
+  animation: float 3.2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
+
+.btn-scan {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 16px 34px;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #120a26;
+  background: linear-gradient(135deg, #b8f3ff, #a89bff);
+  box-shadow: 0 0 28px rgba(143, 123, 255, 0.55);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-scan:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 38px rgba(143, 123, 255, 0.8);
+}
+
+.btn-scan:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.btn-scan.small {
+  padding: 10px 22px;
+  font-size: 1rem;
+}
+
+.btn-ghost {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font: inherit;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.error {
+  max-width: 24rem;
+  margin: 0;
+  color: #ff9db2;
+}
+
+.link-small {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- HUD ---------- */
+
+.hud-top,
+.hud-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--panel);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.hud-top {
+  top: 0;
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+
+.hud-title {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.hud-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-bottom {
+  bottom: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+
+.catalog {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.catalog li {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+}
+
+.catalog li.found {
+  color: #120a26;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: var(--glow);
+  box-shadow: 0 0 12px var(--glow);
+}
+
+.debug {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 14rem;
+  max-width: 86vw;
+  padding: 12px 18px;
+  text-align: center;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--glow);
+  box-shadow: 0 0 24px var(--glow);
+  animation: toast-in 0.35s ease-out;
+}
+
+.toast span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.95);
+  }
+}
+
+/* radar shown while no marker is in view */
+.radar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+}
+
+.radar-sweep {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 1px solid rgba(143, 123, 255, 0.7);
+  background: conic-gradient(from 0deg, rgba(111, 227, 255, 0.55), rgba(111, 227, 255, 0) 30%);
+  box-shadow: 0 0 24px rgba(143, 123, 255, 0.5), inset 0 0 24px rgba(143, 123, 255, 0.3);
+  animation: sweep 2.4s linear infinite;
+}
+
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- marker sheet ---------- */
+
+.sheet {
+  min-height: 100%;
+  padding: 20px;
+  background: #fff;
+  color: #111;
+  overflow: auto;
+}
+
+.sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 60rem;
+  margin: 0 auto 20px;
+}
+
+.sheet-head h1 {
+  margin: 0 0 6px;
+}
+
+.sheet-head p {
+  margin: 0;
+  max-width: 38rem;
+  color: #444;
+  line-height: 1.45;
+}
+
+.sheet-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sheet .link-small {
+  color: #555;
+}
+
+.sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.sheet-item {
+  margin: 0;
+  text-align: center;
+  break-inside: avoid;
+}
+
+.sheet-marker svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px dashed #ccc;
+}
+
+.sheet-item figcaption {
+  margin-top: 6px;
+  font-size: 0.95rem;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .sheet {
+    padding: 0;
+  }
+  .sheet-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18mm;
+  }
+}
