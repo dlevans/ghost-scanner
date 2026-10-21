@@ -74,3 +74,6 @@ export const GHOSTS = [
 ];
 
 export const GHOSTS_BY_ID = Object.fromEntries(GHOSTS.map((g) => [g.id, g]));
+
+// Marker image for a ghost, generated into public/markers/ by `npm run gen:markers`.
+export const markerFileName = (g) => `marker-${g.id}-${g.file.replace(/\.obj$/, '')}.png`;

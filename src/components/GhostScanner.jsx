@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GhostEngine } from '../ar/GhostEngine.js';
-import { GHOSTS } from '../ghosts.js';
+import { GHOSTS, markerFileName } from '../ghosts.js';
 
 function cameraErrorMessage(err) {
   switch (err?.name) {
@@ -192,9 +192,28 @@ export default function GhostScanner() {
             {status === 'starting' ? 'Opening camera…' : 'Scan for ghosts'}
           </button>
           {status === 'error' && <p className="error">{error}</p>}
-          <a className="link-small" href="#/markers">
-            Print the markers
-          </a>
+          <section className="markers-box" aria-label="Test markers">
+            <h2>Test markers</h2>
+            <p>
+              Open one on another screen (or your computer) and point your phone at it. Or{' '}
+              <a href="#/markers">print the whole sheet</a>.
+            </p>
+            <ul className="marker-links">
+              {GHOSTS.map((g) => {
+                const href = `${import.meta.env.BASE_URL}markers/${markerFileName(g)}`;
+                return (
+                  <li key={g.id}>
+                    <a href={href} target="_blank" rel="noreferrer" style={{ '--glow': g.glow }}>
+                      <img src={href} alt={`Marker ${g.id}`} width="72" height="72" loading="lazy" />
+                      <span>
+                        #{g.id} {g.name}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         </main>
       )}
     </div>
