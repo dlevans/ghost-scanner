@@ -19,7 +19,7 @@ export const GHOSTS = [
     color: '#e9fbff',
     glow: '#6fe3ff',
     scale: 0.9,
-    offset: [0, -0.4, 0.45],
+    offset: [0, 1.5, 0.45],
   },
   {
     id: 1,
@@ -29,7 +29,7 @@ export const GHOSTS = [
     color: '#d9d6ff',
     glow: '#8f7bff',
     scale: 0.7,
-    offset: [0, -0.55, 0.45],
+    offset: [0, 1.5, 0.0],
   },
   {
     id: 2,
@@ -39,7 +39,7 @@ export const GHOSTS = [
     color: '#fff1f7',
     glow: '#ff8fc2',
     scale: 0.85,
-    offset: [0, -0.3, 0.45],
+    offset: [0, 1.5, 0.45],
   },
   {
     id: 3,
@@ -49,7 +49,7 @@ export const GHOSTS = [
     color: '#f2fff0',
     glow: '#8dff9d',
     scale: 0.8,
-    offset: [0, -0.5, 0.45],
+    offset: [0, 1.5, 0.45],
   },
   {
     id: 4,
@@ -59,7 +59,7 @@ export const GHOSTS = [
     color: '#e6f4ff',
     glow: '#5aa8ff',
     scale: 0.75,
-    offset: [-0.1, -0.5, 0.45],
+    offset: [0, 1.5, 0.45],
   },
   {
     id: 5,
@@ -68,8 +68,8 @@ export const GHOSTS = [
     file: 'jack.obj',
     color: '#fff6e5',
     glow: '#ffa63d',
-    scale: 0.85,
-    offset: [0, -0.4, 0.45],
+    scale: .99,
+    offset: [0, 1.5, 0.45],
   },
 ];
 
