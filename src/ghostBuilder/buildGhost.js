@@ -206,7 +206,7 @@ export function buildGhost(input) {
   const size = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
   const scale = Math.round(clamp(Math.min(1.1 / size[1], 1.3 / size[0]), 0.4, 1.1) * 100) / 100;
   const centre = (lo, hi) => Math.round(-((lo + hi) / 2) * scale * 100) / 100 + 0; // +0 turns -0 into 0
-  const offset = [centre(min[0], max[0]), centre(min[1], max[1]), 0.45];
+  const offset = [centre(min[0], max[0]), 1.5, 0.45];
   const triangles = objects.reduce((n, [, m]) => n + triangleCount(m), 0);
 
   return { objects, bounds: { min, max, size }, scale, offset, triangles };
