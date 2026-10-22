@@ -71,6 +71,16 @@ export const GHOSTS = [
     scale: .99,
     offset: [0, 1.5, 0.45],
   },
+    {
+    id: 6,
+    name: "Ghost Malone",
+    blurb: "Shaking my boo-ty.",
+    file: 'ghost-malone.obj',
+    color: '#e9fbff',
+    glow: '#6fe3ff',
+    scale: 0.64,
+    offset: [0.03, 1.5, 0.45],
+  },
 ];
 
 export const GHOSTS_BY_ID = Object.fromEntries(GHOSTS.map((g) => [g.id, g]));
